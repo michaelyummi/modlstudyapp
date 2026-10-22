@@ -7,15 +7,28 @@
 </head>
 <body>
     <h1>Modl Study App</h1>
+    <h2>Add Classes</h2>
+    <form action="/add-item" method="POST">
+        <input type="text" name="class_name" placeholder="Enter Classes..."></input>
+        <button type="submit">Add to Classes</button>
+    </form>
+
+    <hr>
     <h2>Classes</h2>
-   <div class="classes-buttons"> 
-    <button class="btn">AP Business</button>
-    <button class="btn">Computer Science</button>
-    <button class="btn">AP Physics</button>
-    <button class="btn">AP Government and Civics</button>
-    <button class="btn">AP English</button>
-    <button class="btn">Italian III</button>
-    <button class="btn">AP Precalculus</button>
-   </div> 
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+    {% for id, name in items %}
+        <a href="/click-item/{{ id }}">
+            <button style="padding: 10px; cursor: pointer;">
+                {{ name }} (ID: {{ id }})
+            </button>
+        </a>
+    {% else %}
+        <p>No Classes added, add classes above.</p>
+    {% endfor %}
+
+    </div>
+
+    
 </body>
 </html>
