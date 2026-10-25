@@ -39,3 +39,25 @@ h2{
     box-sizing: border-box;
     cursor: pointer;
 }
+
+button{
+    margin: 5px;
+    background-color: #e8f5e9;
+    color: darkgreen;
+    border: 2px solid darkgreen;
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+input{
+    margin: 5px;
+    background-color: #e8f5e9;
+    color: darkgreen;
+    border: 2px solid darkgreen;
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    cursor: pointer;
+}

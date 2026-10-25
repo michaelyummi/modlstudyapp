@@ -3,15 +3,29 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta charset="UTF-8">
-    <title>Modl Study App</title>
+    <title>{{ name }}</title>
 </head>
 <body>
     <h1>Modl Study App</h1>
     <h2>{{ name }}</h2>
-    <form action="/home-page", action="/add-item" method"POST"=>
+    <form action="{{ url_for('home_page') }}" method="POST">
         <button type="submit">Redirect to Classes</button>
     </form>
+    <form action="{{ url_for('add_unit', item_id=item_id) }}" method="POST">
+        <label for="unit_name">Unit Title</label>
+        <input type="text" id="unit_name" name="unit_name" required>
+        <button type="submit">Add Unit/Topic to Class</button>
+    </form>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
-    
+    {% for unit_id, unit_name in items %}
+        <button type="button" style="padding: 10px; cursor: pointer;">
+            {{ unit_name }}
+        </button>
+    {% else %}
+        <p>No Units Added...</p>
+    {% endfor %}
+    </div>
+
 </body>
 </html>

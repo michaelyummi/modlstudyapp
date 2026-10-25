@@ -1,7 +1,15 @@
 DROP TABLE IF EXISTS classes;
 
 CREATE TABLE classes(
-    id integer PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     class_name TEXT NOT NULL UNIQUE
+    
+);
+
+CREATE TABLE units(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_id INTEGER NOT NULL,
+    unit_name TEXT NOT NULL,
+    FOREIGN KEY (class_id) REFERENCES classes (id) ON DELETE CASCADE
 );
     
