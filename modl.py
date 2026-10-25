@@ -34,6 +34,15 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notes(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            unit_id INTEGER NOT NULL,
+            notes_name TEXT NOT NULL,
+            FOREIGN KEY (unit_id) REFERENCES units (id) ON DELETE CASCADE
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -114,8 +123,43 @@ def add_unit(item_id):
 
 
 #directs to specific unit information(bulk of the data)
-#to be completed
+#allows user input of notes for each unit
 
+@app.route("/unit/<int:unit_id>")
+def view_unit(unit_id):
+    db_path = os.path.join(BASE_DIR, "database", "classes.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT class_id, unit_name FROM units WHERE id = ?", (unit_id,))
+    unit = cursor.fetchone()
+
+    if unit is None:
+        conn.close()
+        return redirect(url_for("home"))
+
+    class_id, unit_name = unit
+    cursor.execute("SELECT id, notes_name FROM notes WHERE unit_id = ? ORDER BY id", (unit_id,))
+    notes = cursor.fetchall()
+    conn.close()
+
+    return render_template("unit.html", name=unit_name, item_id=class_id, unit_id=unit_id, unit_name=unit_name, items=notes)
+
+
+@app.route("/unit-notes/<int:unit_id>", methods=["POST"])
+def get_notes(unit_id):
+    notes_name = request.form.get('notes_name') or request.form.get('class_name') or request.form.get('unit_title')
+
+    if not notes_name:
+        return redirect(url_for('view_unit', unit_id=unit_id))
+
+    db_path = os.path.join(BASE_DIR, "database", "classes.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO notes (unit_id, notes_name) VALUES (?, ?)", (unit_id, notes_name))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('view_unit', unit_id=unit_id))
 
 #go back to home page from individual class page
 #to do: build function to direct user from individual class page to home page
@@ -125,6 +169,11 @@ def home_page():
     print("User redirected to home page")
     return redirect(url_for("home"))
 
+#reroutes user from unit/notes page to previous class page
+@app.route("/last-class/<int:item_id>", methods=["GET", "POST"])
+def last_class(item_id):
+    print("User redirect to last class page")
+    return redirect(url_for('click_item', item_id=item_id))
 
 if __name__ == "__main__":
     init_db()

@@ -12,4 +12,11 @@ CREATE TABLE units(
     unit_name TEXT NOT NULL,
     FOREIGN KEY (class_id) REFERENCES classes (id) ON DELETE CASCADE
 );
+ 
+ CREATE TABLE notes(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    unit_name TEXT NOT NULL,
+    notes_name TEXT NOT NULL,
+    FOREIGN KEY (unit_name) REFERENCES units (unit_name) ON DELETE CASCADE
+ );
     

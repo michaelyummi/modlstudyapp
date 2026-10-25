@@ -19,9 +19,11 @@
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
     {% for unit_id, unit_name in items %}
-        <button type="button" style="padding: 10px; cursor: pointer;">
-            {{ unit_name }}
-        </button>
+        <a href="{{ url_for('view_unit', unit_id=unit_id) }}">
+            <button type="button" style="padding: 10px; cursor: pointer;">
+                {{ unit_name }}
+            </button>
+        </a>
     {% else %}
         <p>No Units Added...</p>
     {% endfor %}

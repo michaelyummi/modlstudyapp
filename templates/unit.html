@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>{{ name }}</title>
+</head>
+<body>
+    <h1>Modl Study App</h1>
+    <h2>{{ unit_name }}</h2>
+    <form action="{{ url_for('last_class', item_id=item_id) }}" method="POST">
+        <button type="submit">Redirect to Class</button>
+    </form>
+
+   <form action="{{ url_for('get_notes', unit_id=unit_id) }}" method="POST">
+        <input type="text" name="notes_name" placeholder="Enter Notes Here..."></input>
+        <button type="submit">Add Notes to Unit</button>
+    </form>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+    {% for notes_id, notes in items %}
+        <p>
+            {{ notes }}
+        </p>
+    {% else %}
+        <p>No Notes Added...</p>
+    {% endfor %}
+    </div>
+</body>
+</html>
