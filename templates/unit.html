@@ -16,13 +16,15 @@
         <input type="text" name="notes_name" placeholder="Enter Notes Here..."></input>
         <button type="submit">Add Notes to Unit</button>
     </form>
-
+    <p>Click on a note to remove it from Unit Notes.</p>
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
     {% for notes_id, notes in items %}
-        <p>
-            {{ notes }}
-        </p>
+        <form action="{{ url_for('remove_notes', note_id=notes_id) }}" method="POST">
+            <button type="submit">
+                {{ notes }}
+            </button>
+        </form>
     {% else %}
         <p>No Notes Added...</p>
     {% endfor %}

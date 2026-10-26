@@ -9,13 +9,16 @@ app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"),
 )
 
 
-#database logic
-def init_db():
+def get_db_connection():
     db_dir = os.path.join(BASE_DIR, "database")
     os.makedirs(db_dir, exist_ok=True)
-
     db_path = os.path.join(db_dir, "classes.db")
-    conn = sqlite3.connect(db_path)
+    return sqlite3.connect(db_path, timeout=30)
+
+
+#database logic
+def init_db():
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -70,8 +73,7 @@ def add_class():
     new_class = request.form.get("class_name") or request.form.get("item_name")
 
     if new_class:
-        db_path = os.path.join(BASE_DIR, "database", "classes.db")
-        conn = sqlite3.connect(db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
         try:
             cursor.execute("INSERT INTO classes (class_name) VALUES (?)", (new_class,))
@@ -87,8 +89,7 @@ def add_class():
 @app.route("/click-item/<int:item_id>")
 def click_item(item_id):
     print(f"User clicked button for class ID: {item_id}")
-    db_path = os.path.join(BASE_DIR, "database", "classes.db")
-    conn = sqlite3.connect(db_path)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT class_name FROM classes WHERE id = ?", (item_id,))
     class_result = cursor.fetchone()
@@ -111,8 +112,7 @@ def add_unit(item_id):
     if not unit_name:
         return redirect(url_for('click_item', item_id=item_id))
 
-    db_path = os.path.join(BASE_DIR, "database", "classes.db")
-    conn = sqlite3.connect(db_path)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("INSERT INTO units (class_id, unit_name) VALUES (?, ?)", (item_id, unit_name))
     conn.commit()
@@ -127,8 +127,7 @@ def add_unit(item_id):
 
 @app.route("/unit/<int:unit_id>")
 def view_unit(unit_id):
-    db_path = os.path.join(BASE_DIR, "database", "classes.db")
-    conn = sqlite3.connect(db_path)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT class_id, unit_name FROM units WHERE id = ?", (unit_id,))
     unit = cursor.fetchone()
@@ -152,14 +151,34 @@ def get_notes(unit_id):
     if not notes_name:
         return redirect(url_for('view_unit', unit_id=unit_id))
 
-    db_path = os.path.join(BASE_DIR, "database", "classes.db")
-    conn = sqlite3.connect(db_path)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("INSERT INTO notes (unit_id, notes_name) VALUES (?, ?)", (unit_id, notes_name))
     conn.commit()
     conn.close()
 
     return redirect(url_for('view_unit', unit_id=unit_id))
+
+
+#remove notes function for notes page
+
+@app.route("/delete-note/<int:note_id>", methods=["POST"])
+def remove_notes(note_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT unit_id FROM notes WHERE id = ?", (note_id,))
+    note = cursor.fetchone()
+
+    if note is not None:
+        unit_id = note[0]
+        cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('view_unit', unit_id=unit_id))
+
+    conn.close()
+    return redirect(url_for('home'))
+    
 
 #go back to home page from individual class page
 #to do: build function to direct user from individual class page to home page
